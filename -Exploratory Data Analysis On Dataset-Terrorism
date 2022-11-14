@@ -1,0 +1,76 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt 
+import seaborn as sns
+
+terrorism_data= pd.read_csv("globalterrorism.csv") 
+terrorism_data.head()
+
+terrorism_data.columns
+terrorism_data.rename(columns={'iyear':'Year','imonth':'Month','iday':"day",'gname':'Group','country_txt':'Country','region_txt':'Region','provstate':'State','city':'City','latitude':'latitude',
+    'longitude':'longitude','summary':'summary','attacktype1_txt':'Attacktype','targtype1_txt':'Targettype','weaptype1_txt':'Weapon','nkill':'kill',
+     'nwound':'Wound'},inplace=True)
+terrorism_data =terrorism_data[['Year','Month','day','Country','State','Region','City','latitude','longitude',"Attacktype",'kill',
+               'Wound','target1','summary','Group','Targettype','Weapon','motive']]
+terrorism_data.head()  
+terrorism_data.shape 
+terrorism_data.isnull().sum()
+terrorism_data['Wound'] = terrorism_data['Wound'].fillna(0)
+terrorism_data['kill'] = terrorism_data['kill'].fillna(0)
+terrorism_data['Casualities'] = terrorism_data['kill'] + terrorism_data['Wound']
+terrorism_data.isnull().sum()
+terrorism_data.drop(['motive','summary','latitude','longitude'],axis=1,inplace= True)
+terrorism_data.info()
+terrorism_data.describe() 
+attack = terrorism_data.Country.value_counts()[:5]
+attack
+year = terrorism_data['Year'].unique()
+years_count = terrorism_data['Year'].value_counts(dropna = False).sort_index()
+plt.figure(figsize = (18,10))
+sns.barplot(x = year,
+           y = years_count,
+           palette = "Paired")
+plt.xlabel('Attacking Year',fontsize=15)
+plt.ylabel('Number of Attacks Each Year',fontsize=15)
+plt.title('Attacks In Years',fontsize=20)
+plt.show()
+plt.subplots(figsize=(20,10))
+sns.barplot(terrorism_data['Country'].value_counts()[:10].index,terrorism_data['Country'].value_counts()[:10].values,palette="Set2")
+plt.title('Top Countries Affected')
+plt.xlabel('Countries')
+plt.ylabel('Count')
+plt.xticks(rotation = 50)
+plt.show()
+df = terrorism_data[['Year','kill']].groupby(['Year']).sum()
+fig, ax4 = plt.subplots(figsize=(20,10))
+df.plot(kind='bar',alpha=0.7,ax=ax4)
+plt.xticks(rotation = 50)
+plt.title("People Died Due To Attack",fontsize=25)
+plt.ylabel("Number of killed peope",fontsize=20)
+plt.xlabel('Year',fontsize=20)
+ 
+ pd.crosstab(terrorism_data.Year, terrorism_data.Region).plot(kind='area',stacked=False,figsize=(20,10))
+plt.title('Terrorist Activities By Region In Each Year',fontsize=25)
+plt.ylabel('Number of Attacks',fontsize=20)
+plt.xlabel("Year",fontsize=20)
+plt.show()
+terrorism_data['City'].value_counts().to_frame().sort_values('City',axis=0,ascending=False).head(10).plot(kind='bar',figsize=(20,10),color="Red")
+plt.xticks(rotation = 50)
+plt.xlabel("City",fontsize=15)
+plt.ylabel("Number of attack",fontsize=15)
+plt.title("Top 10 most effected city",fontsize=20)
+plt.show()
+terrorism_data[['Attacktype','kill']].groupby(["Attacktype"],axis=0).sum().plot(kind='bar',figsize=(20,10),color="pink")
+plt.xticks(rotation=50)
+plt.title("Number of killed ",fontsize=20)
+plt.ylabel('Number of people',fontsize=15)
+plt.xlabel('Attack type',fontsize=15)
+plt.show()
+terrorism_data['Group'].value_counts().to_frame().drop('Unknown').head(10).plot(kind='bar',color='Teal',figsize=(20,10))
+plt.title("Top 10 terrorist group attack",fontsize=20)
+plt.xlabel("terrorist group name",fontsize=15)
+plt.ylabel("Attack number",fontsize=15)
+plt.show()
+gtr=terrorism_data[['Group','Country','kill']]
+gtr=terrorism_data.groupby(['Group','Country'],axis=0).sum().sort_values('kill',ascending=False).drop('Unknown').reset_index().head(10)
+gtr
