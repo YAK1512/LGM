@@ -1,0 +1,32 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import sklearn.metrics as sm
+%matplotlib inline
+iris=pd.read_csv("Iris.csv")
+iris.head(15)
+iris.shape
+iris.describe(include="all")
+iris.info()
+iris.isnull().sum()
+iris['Species'].value_counts()
+from sklearn.preprocessing import LabelEncoder
+le=LabelEncoder()
+iris['Encoded Species']=le.fit_transform(iris['Species'])
+iris.head()
+X=iris.drop(["Species"],axis=1)
+y=iris["Species"]
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.3,random_state=42)
+from sklearn.tree import DecisionTreeClassifier
+dtree=DecisionTreeClassifier()
+dtree.fit(X_train,y_train)
+prediction=dtree.predict(X_test)
+from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
+print(classification_report(y_test,prediction))
+print(confusion_matrix(y_test,prediction))
+print(accuracy_score(y_test,prediction)*100,"%")
+from sklearn import tree
+plt.figure(figsize=(16,10))
+tree.plot_tree(dtree,filled=True)
