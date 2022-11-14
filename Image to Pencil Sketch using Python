@@ -1,0 +1,40 @@
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+
+plt.axis("off")
+img=cv2.imread('Flag.jpg')
+img=cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+plt.title("Original Image")
+plt.imshow(img)
+
+img_gray=cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
+#plt.figure(figsize=(8,8))
+plt.axis("off")
+plt.imshow(img_gray)
+plt.title("GrayScale Image")
+plt.show()
+
+img_invert=255-img_gray
+#plt.figure(figsize=(8,8))
+plt.axis("off")
+plt.imshow(img_invert)
+plt.title("Inverted Image")
+plt.show()
+
+blurred_image=cv2.GaussianBlur(img_invert, (21,21), 0)
+inv_blurred=255-blurred_image
+#plt.figure(figsize=(8,8))
+plt.axis("off")
+plt.imshow(inv_blurred)
+plt.title("Smoothen Image")
+plt.show()
+
+img_sketch=cv2.divide(img_gray, inv_blurred , scale=255)
+ 
+final_sketch=cv2.filter2D(img_sketch,-1,kernal)
+plt.axis("off")
+plt.imshow(final_sketch,cmap="gray")
+plt.title("Final Sketch Image")
+plt.show()
+
